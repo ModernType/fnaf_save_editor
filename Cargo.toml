@@ -1,0 +1,28 @@
+[package]
+name = "fnaf_save_editor"
+description = "Program to edit save files of various FNaF games"
+authors = ["ModernType <antonaw2004@gmail.com>"]
+version = "0.1.0"
+edition = "2024"
+build = "build.rs"
+repository = "https://github.com/ModernType/fnaf_save_editor"
+readme = "README.md"
+license = "GPL-3.0-only"
+
+[dependencies]
+anyhow = "1.0.98"
+derive_more = {version = "2.0.1", features = ["display"]}
+home = "0.5.11"
+image = { version = "0.25.6", default-features = false, features = ["png"]}
+mimalloc = "0.1.46"
+nom = "8.0.0"
+notify = {version = "8.0.0"}
+parking_lot = "0.12.4"
+slint = {version = "1.11.0", features = ["renderer-skia"]}
+
+[build-dependencies]
+slint-build = "1.11.0"
+winresource = "0.1.22"
+
+[features]
+no-animation = []

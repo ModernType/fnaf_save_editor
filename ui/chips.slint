@@ -1,0 +1,1314 @@
+import { VerticalBox } from "std-widgets.slint";
+import { Game } from "base.slint";
+
+
+component Chip {
+    in-out property <bool> activated;
+    in-out property <bool> selected;
+    in property <image> source;
+    in property <int> selected-count;
+
+    callback activate(bool);
+    callback select(bool);
+
+    Rectangle {
+        background: Colors.blue;
+        border-radius: 15px;
+        visible: selected;
+    }
+
+    Image {
+        opacity: activated ? 1.0 : 0.3;
+        source: root.source;
+        image-fit: ImageFit.contain;
+    }
+
+    TouchArea {
+        pointer-event(event) => {
+            if event.kind == PointerEventKind.down {
+                if event.button == PointerEventButton.left {
+                    if root.activated == true && root.selected == true {
+                        select(false);
+                    }
+                    activate(!root.activated);
+                }
+                else if event.button == PointerEventButton.right {
+                    if (selected-count < 4 || root.selected == true) && root.activated {
+                        select(!root.selected);
+                    }
+                }
+            }
+        }
+    }
+
+    @children
+}
+
+export component ChipsScreen {
+    in-out property <[bool]> chips: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
+    property <[bool]> selected: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
+    property <int> selected-count;
+    in property <Game> game;
+
+    callback chip-edited(int, bool);
+    callback chip-selected-edited(int, bool);
+    callback set-selected-chips([bool], int);
+
+
+    set-selected-chips(selected, count) => {
+        root.selected = selected;
+        root.selected-count = count;
+    }
+
+    VerticalBox {
+        spacing: 10px;
+
+        Text {
+            text: "Chips";
+            font-size: 28px;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+
+        if root.game == Game.WorldVanilla: GridLayout {
+            spacing: 1px;
+            min-height: c.preferred-height * 3 + 2px;
+            min-width: c.preferred-width * 7 + 6px;
+
+            c := Chip {
+                col: 0;
+                row: 0;
+
+                activated: chips[0];
+                selected: selected[0];
+                source: @image-url("assets/chips/1.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[0] = b;
+                    chip-edited(0, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[0] = b;
+                        chip-selected-edited(0, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 1;
+                row: 0;
+
+                activated: chips[1];
+                selected: selected[1];
+                source: @image-url("assets/chips/2.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[1] = b;
+                    chip-edited(1, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[1] = b;
+                        chip-selected-edited(1, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 2;
+                row: 0;
+
+                activated: chips[2];
+                selected: selected[2];
+                source: @image-url("assets/chips/3.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[2] = b;
+                    chip-edited(2, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[2] = b;
+                        chip-selected-edited(2, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 3;
+                row: 0;
+
+                activated: chips[3];
+                selected: selected[3];
+                source: @image-url("assets/chips/4.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[3] = b;
+                    chip-edited(3, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[3] = b;
+                        chip-selected-edited(3, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 4;
+                row: 0;
+
+                activated: chips[4];
+                selected: selected[4];
+                source: @image-url("assets/chips/5.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[4] = b;
+                    chip-edited(4, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[4] = b;
+                        chip-selected-edited(4, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 5;
+                row: 0;
+
+                activated: chips[5];
+                selected: selected[5];
+                source: @image-url("assets/chips/6.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[5] = b;
+                    chip-edited(5, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[5] = b;
+                        chip-selected-edited(5, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 6;
+                row: 0;
+
+                activated: chips[6];
+                selected: selected[6];
+                source: @image-url("assets/chips/7.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[6] = b;
+                    chip-edited(6, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[6] = b;
+                        chip-selected-edited(6, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 0;
+                row: 1;
+
+                activated: chips[7];
+                selected: selected[7];
+                source: @image-url("assets/chips/8.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[7] = b;
+                    chip-edited(7, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[7] = b;
+                        chip-selected-edited(7, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 1;
+                row: 1;
+
+                activated: chips[8];
+                selected: selected[8];
+                source: @image-url("assets/chips/9.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[8] = b;
+                    chip-edited(8, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[8] = b;
+                        chip-selected-edited(8, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 2;
+                row: 1;
+
+                activated: chips[9];
+                selected: selected[9];
+                source: @image-url("assets/chips/10.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[9] = b;
+                    chip-edited(9, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[9] = b;
+                        chip-selected-edited(9, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 3;
+                row: 1;
+
+                activated: chips[10];
+                selected: selected[10];
+                source: @image-url("assets/chips/11.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[10] = b;
+                    chip-edited(10, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[10] = b;
+                        chip-selected-edited(10, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 4;
+                row: 1;
+
+                activated: chips[11];
+                selected: selected[11];
+                source: @image-url("assets/chips/12.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[11] = b;
+                    chip-edited(11, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[11] = b;
+                        chip-selected-edited(11, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 5;
+                row: 1;
+
+                activated: chips[12];
+                selected: selected[12];
+                source: @image-url("assets/chips/13.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[12] = b;
+                    chip-edited(12, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[12] = b;
+                        chip-selected-edited(12, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 6;
+                row: 1;
+
+                activated: chips[13];
+                selected: selected[13];
+                source: @image-url("assets/chips/14.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[13] = b;
+                    chip-edited(13, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[13] = b;
+                        chip-selected-edited(13, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 0;
+                row: 2;
+
+                activated: chips[14];
+                selected: selected[14];
+                source: @image-url("assets/chips/15.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[14] = b;
+                    chip-edited(14, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[14] = b;
+                        chip-selected-edited(14, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 1;
+                row: 2;
+
+                activated: chips[15];
+                selected: selected[15];
+                source: @image-url("assets/chips/16.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[15] = b;
+                    chip-edited(15, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[15] = b;
+                        chip-selected-edited(15, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 2;
+                row: 2;
+
+                activated: chips[16];
+                selected: selected[16];
+                source: @image-url("assets/chips/17.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[16] = b;
+                    chip-edited(16, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[16] = b;
+                        chip-selected-edited(16, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 3;
+                row: 2;
+
+                activated: chips[17];
+                selected: selected[17];
+                source: @image-url("assets/chips/18.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[17] = b;
+                    chip-edited(17, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[17] = b;
+                        chip-selected-edited(17, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 4;
+                row: 2;
+
+                activated: chips[18];
+                selected: selected[18];
+                source: @image-url("assets/chips/19.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[18] = b;
+                    chip-edited(18, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[18] = b;
+                        chip-selected-edited(18, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 5;
+                row: 2;
+
+                activated: chips[19];
+                selected: selected[19];
+                source: @image-url("assets/chips/20.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[19] = b;
+                    chip-edited(19, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[19] = b;
+                        chip-selected-edited(19, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 6;
+                row: 2;
+
+                activated: chips[20];
+                selected: selected[20];
+                source: @image-url("assets/chips/21.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[20] = b;
+                    chip-edited(20, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[20] = b;
+                        chip-selected-edited(20, b);
+                    }   
+                }
+            }
+        }
+
+        if root.game == Game.WorldRefreshed: GridLayout {
+            spacing: 1px;
+            min-height: cr.preferred-height * 3 + 2px;
+            min-width: cr.preferred-width * 7 + 6px;
+
+            cr := Chip {
+                col: 0;
+                row: 0;
+
+                activated: chips[0];
+                selected: selected[0];
+                source: @image-url("assets/chips/1.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[0] = b;
+                    chip-edited(0, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[0] = b;
+                        chip-selected-edited(0, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 1;
+                row: 0;
+
+                activated: chips[1];
+                selected: selected[1];
+                source: @image-url("assets/chips/2.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[1] = b;
+                    chip-edited(1, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[1] = b;
+                        chip-selected-edited(1, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 2;
+                row: 0;
+
+                activated: chips[2];
+                selected: selected[2];
+                source: @image-url("assets/chips/3.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[2] = b;
+                    chip-edited(2, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[2] = b;
+                        chip-selected-edited(2, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 3;
+                row: 0;
+
+                activated: chips[3];
+                selected: selected[3];
+                source: @image-url("assets/chips/4.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[3] = b;
+                    chip-edited(3, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[3] = b;
+                        chip-selected-edited(3, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 4;
+                row: 0;
+
+                activated: chips[4];
+                selected: selected[4];
+                source: @image-url("assets/chips/5.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[4] = b;
+                    chip-edited(4, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[4] = b;
+                        chip-selected-edited(4, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 5;
+                row: 0;
+
+                activated: chips[5];
+                selected: selected[5];
+                source: @image-url("assets/chips/6.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[5] = b;
+                    chip-edited(5, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[5] = b;
+                        chip-selected-edited(5, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 6;
+                row: 0;
+
+                activated: chips[6];
+                selected: selected[6];
+                source: @image-url("assets/chips/7.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[6] = b;
+                    chip-edited(6, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[6] = b;
+                        chip-selected-edited(6, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 0;
+                row: 1;
+
+                activated: chips[7];
+                selected: selected[7];
+                source: @image-url("assets/chips/8.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[7] = b;
+                    chip-edited(7, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[7] = b;
+                        chip-selected-edited(7, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 1;
+                row: 1;
+
+                activated: chips[8];
+                selected: selected[8];
+                source: @image-url("assets/chips/9.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[8] = b;
+                    chip-edited(8, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[8] = b;
+                        chip-selected-edited(8, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 2;
+                row: 1;
+
+                activated: chips[9];
+                selected: selected[9];
+                source: @image-url("assets/chips/10.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[9] = b;
+                    chip-edited(9, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[9] = b;
+                        chip-selected-edited(9, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 3;
+                row: 1;
+
+                activated: chips[10];
+                selected: selected[10];
+                source: @image-url("assets/chips/11.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[10] = b;
+                    chip-edited(10, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[10] = b;
+                        chip-selected-edited(10, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 4;
+                row: 1;
+
+                activated: chips[11];
+                selected: selected[11];
+                source: @image-url("assets/chips/12.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[11] = b;
+                    chip-edited(11, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[11] = b;
+                        chip-selected-edited(11, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 5;
+                row: 1;
+
+                activated: chips[12];
+                selected: selected[12];
+                source: @image-url("assets/chips/13.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[12] = b;
+                    chip-edited(12, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[12] = b;
+                        chip-selected-edited(12, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 6;
+                row: 1;
+
+                activated: chips[13];
+                selected: selected[13];
+                source: @image-url("assets/chips/14.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[13] = b;
+                    chip-edited(13, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[13] = b;
+                        chip-selected-edited(13, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 0;
+                row: 2;
+
+                activated: chips[14];
+                selected: selected[14];
+                source: @image-url("assets/chips/15.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[14] = b;
+                    chip-edited(14, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[14] = b;
+                        chip-selected-edited(14, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 1;
+                row: 2;
+
+                activated: chips[15];
+                selected: selected[15];
+                source: @image-url("assets/chips/16.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[15] = b;
+                    chip-edited(15, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[15] = b;
+                        chip-selected-edited(15, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 2;
+                row: 2;
+
+                activated: chips[16];
+                selected: selected[16];
+                source: @image-url("assets/chips/17.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[16] = b;
+                    chip-edited(16, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[16] = b;
+                        chip-selected-edited(16, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 3;
+                row: 2;
+
+                activated: chips[17];
+                selected: selected[17];
+                source: @image-url("assets/chips/18.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[17] = b;
+                    chip-edited(17, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[17] = b;
+                        chip-selected-edited(17, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 4;
+                row: 2;
+
+                activated: chips[18];
+                selected: selected[18];
+                source: @image-url("assets/chips/19.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[18] = b;
+                    chip-edited(18, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[18] = b;
+                        chip-selected-edited(18, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 5;
+                row: 2;
+
+                activated: chips[19];
+                selected: selected[19];
+                source: @image-url("assets/chips/20.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[19] = b;
+                    chip-edited(19, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[19] = b;
+                        chip-selected-edited(19, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 6;
+                row: 2;
+
+                activated: chips[20];
+                selected: selected[20];
+                source: @image-url("assets/chips/21.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[20] = b;
+                    chip-edited(20, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[20] = b;
+                        chip-selected-edited(20, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 0;
+                row: 3;
+
+                activated: chips[21];
+                selected: selected[21];
+                source: @image-url("assets/chips/22.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[21] = b;
+                    chip-edited(21, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[21] = b;
+                        chip-selected-edited(21, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 1;
+                row: 3;
+
+                activated: chips[22];
+                selected: selected[22];
+                source: @image-url("assets/chips/23.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[22] = b;
+                    chip-edited(22, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[22] = b;
+                        chip-selected-edited(22, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 2;
+                row: 3;
+
+                activated: chips[23];
+                selected: selected[23];
+                source: @image-url("assets/chips/24.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[23] = b;
+                    chip-edited(23, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[23] = b;
+                        chip-selected-edited(23, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 3;
+                row: 3;
+
+                activated: chips[24];
+                selected: selected[24];
+                source: @image-url("assets/chips/25.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[24] = b;
+                    chip-edited(24, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[24] = b;
+                        chip-selected-edited(24, b);
+                    }   
+                }
+            }
+            Chip {
+                col: 4;
+                row: 3;
+
+                activated: chips[25];
+                selected: selected[25];
+                source: @image-url("assets/chips/26.png");
+                selected-count: root.selected-count;
+
+                activate(b) => {
+                    root.chips[25] = b;
+                    chip-edited(25, b)
+                }
+                select(b) => {
+                    if b {
+                        root.selected-count += 1;
+                    }
+                    else {
+                        root.selected-count -= 1;
+                    }
+                    if selected-count <= 4 {
+                        root.selected[25] = b;
+                        chip-selected-edited(25, b);
+                    }   
+                }
+            }
+        }
+
+        Text {
+            text: "Left click to add or remove chip. Right click to equip or unequip it";
+            horizontal-alignment: center;
+        }
+    }
+}

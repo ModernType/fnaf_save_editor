@@ -1,0 +1,497 @@
+import { VerticalBox, Palette, HorizontalBox, Button } from "std-widgets.slint";
+import { PartyScreen, Character } from "characters.slint";
+import { WorldScreen, Gamemode } from "world.slint";
+import { ChipsScreen } from "chips.slint";
+import { BytesScreen } from "bytes.slint";
+import { Game } from "base.slint";
+import { TrophyScreen } from "trophies.slint";
+
+export { Game }
+
+enum Screen {
+    party,
+    chips,
+    bytes,
+    world,
+    none,
+}
+
+component TabButton {
+    in property <Screen> tab-scr;
+    in property <string> text;
+    in property <length> text-size;
+    in property <Screen> cur-scr;
+
+    callback choose-tab(Screen);
+
+    TouchArea {
+        clicked => {
+            choose-tab(root.tab-scr)
+        }
+    }
+
+    Rectangle {
+        background: tab-scr == cur-scr ? Palette.background : Palette.background.brighter(0.2);
+        border-top-left-radius: root.height / 3;
+        border-top-right-radius: root.height / 3;
+
+        animate background {
+             duration: 200ms;
+            //  easing: ease-in-out;
+        }
+    }
+
+    Text {
+        text: root.text;
+        overflow: TextOverflow.elide;
+        font-size: root.text-size;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+
+}
+
+component SnackBar {
+    in-out property <bool> opened: false;
+    in property <duration> show-time: 2s;
+    in property <brush> text-color: Palette.foreground;
+    in-out property <string> text: "Test text";
+    height: 50px;
+
+    Rectangle {
+        y: root.opened ? 0 : root.height;
+        height: root.height - 8px;
+        width: root.width - 8px;
+        border-radius: 10px;
+        background: Palette.background.brighter(0.3);
+        Text {
+            text: root.text;
+            color: root.text-color;
+            font-size: root.height / 2.5;
+            vertical-alignment: center;
+            horizontal-alignment: left;
+            overflow: elide;
+            width: root.width - 20px;
+        }
+        animate y {
+            duration: 150ms;
+        }
+    }
+}
+
+export component MainWindow inherits Window {
+    min-height: 600px;
+    min-width: 1100px;
+    icon: @image-url("assets/icon.png");
+    title: "Modern FNaF Save Editor";
+    // default-font-size: 18px;
+
+    callback report(string);
+    report(text) => {
+        snackbar.text = text;
+        snackbar.opened = true;
+        report-close-prepare(snackbar.show-time);
+    }
+    callback report-close-prepare(duration);
+    callback report-close();
+    report-close => {
+        snackbar.opened = false;
+    }
+
+    property <Screen> selected-scr: Screen.none;
+
+    callback lvl-edited <=> party-scr.lvl-edited;
+    callback next-edited <=> party-scr.next-edited;
+    callback have-edited <=> party-scr.have-edited;
+
+    callback gamemode-edited(Gamemode);
+    callback difficulty-edited(int);
+    callback other-edited(int);
+    callback hours-edited(int);
+    callback minutes-edited(int);
+    callback seconds-edited(int);
+    callback x-edited(int);
+    callback y-edited(int);
+    callback tokens-edited(int);
+    callback pearls-edited(int);
+    callback armor-edited(int);
+    callback jumps-edited <=> world-scr.jumps-edited;
+    callback porkpatch-edited(bool);
+    callback guardians-edited <=> world-scr.guardians-edited;
+    callback clocks-edited <=> world-scr.clocks-edited;
+    callback key-edited(bool);
+    callback portal-edited(bool);
+    callback lantern-edited(bool);
+    callback set-world-data(
+        gamemode: Gamemode,
+        difficulty: int,
+        hours: int,
+        minutes: int,
+        seconds: int,
+        _x: int,
+        _y: int,
+        tokens: int,
+        pearls: int,
+        armor: int,
+        jumps: [bool],
+        porkpatch: bool,
+        guardians: [bool],
+        clocks: [bool],
+        key: bool,
+        portal: bool,
+        lantern: bool
+    );
+
+    set-world-data(
+        gamemode,
+        difficulty,
+        hours,
+        minutes,
+        seconds,
+        _x,
+        _y,
+        tokens,
+        pearls,
+        armor,
+        jumps,
+        porkpatch,
+        guardians,
+        clocks,
+        key,
+        portal,
+        lantern,
+    ) => {
+        world-scr.gamemode = gamemode;
+        world-scr.other-difficulty = difficulty;
+        world-scr.hours = hours;
+        world-scr.minutes = minutes;
+        world-scr.seconds = seconds;
+        world-scr._x = _x;
+        world-scr._y = _y;
+        world-scr.tokens = tokens;
+        world-scr.pearls = pearls;
+        world-scr.armor = armor;
+        world-scr.jumps = jumps;
+        world-scr.porkpatch = porkpatch;
+        world-scr.guardians = guardians;
+        world-scr.clocks = clocks;
+        world-scr.key = key;
+        world-scr.portal = portal;
+        world-scr.lantern = lantern;
+    }
+
+    // We initialise characters from saves here
+    callback set-char-data([Character]);
+    set-char-data(char-data) => {
+        party-scr.char-data = char-data;
+        party-scr.select(0);
+    }
+    // We initialise animation frames in thread during startup to lower startup time
+    // There we have only first frames (e.g. ui will display static images)
+    in-out property <[[image]]> characters-frames: [
+        [],
+        [@image-url("assets/char_animations/1/94.png")],
+        [@image-url("assets/char_animations/2/8210.png")],        
+        [@image-url("assets/char_animations/3/8221.png")],        
+        [@image-url("assets/char_animations/4/8232.png")],        
+        [@image-url("assets/char_animations/5/8243.png")],        
+        [@image-url("assets/char_animations/6/8254.png")],        
+        [@image-url("assets/char_animations/7/8265.png")],        
+        [@image-url("assets/char_animations/8/8276.png")],        
+        [@image-url("assets/char_animations/9/8287.png")],
+        [@image-url("assets/char_animations/10/8298.png")],
+        [@image-url("assets/char_animations/11/8309.png")],
+        [@image-url("assets/char_animations/12/8320.png")],
+        [@image-url("assets/char_animations/13/8331.png")],
+        [@image-url("assets/char_animations/14/8341.png")],
+        [@image-url("assets/char_animations/15/8352.png")],
+        [@image-url("assets/char_animations/16/8364.png")],
+        [@image-url("assets/char_animations/17/8375.png")],
+        [@image-url("assets/char_animations/18/8385.png")],
+        [@image-url("assets/char_animations/19/8395.png")],
+        [@image-url("assets/char_animations/20/8405.png")],
+        [@image-url("assets/char_animations/21/8415.png")],
+        [@image-url("assets/char_animations/22/8425.png")],
+        [@image-url("assets/char_animations/23/8435.png")],
+        [@image-url("assets/char_animations/24/8445.png")],
+        [@image-url("assets/char_animations/25/8455.png")],
+        [@image-url("assets/char_animations/26/8466.png")],
+        [@image-url("assets/char_animations/27/8477.png")],
+        [@image-url("assets/char_animations/28/8488.png")],
+        [@image-url("assets/char_animations/29/8499.png")],
+        [@image-url("assets/char_animations/30/8509.png")],
+        [@image-url("assets/char_animations/31/8519.png")],
+        [@image-url("assets/char_animations/32/8529.png")],
+        [@image-url("assets/char_animations/33/8541.png")],
+        [@image-url("assets/char_animations/34/319.png")],
+        [@image-url("assets/char_animations/35/8558.png")],
+        [@image-url("assets/char_animations/36/8569.png")],
+        [@image-url("assets/char_animations/37/8581.png")],
+        [@image-url("assets/char_animations/38/8593.png")],
+        [@image-url("assets/char_animations/39/430.png")],
+        [@image-url("assets/char_animations/40/8615.png")],
+        [@image-url("assets/char_animations/41/8628.png")],
+        [@image-url("assets/char_animations/42/8639.png")],
+        [@image-url("assets/char_animations/43/8650.png")],
+        [@image-url("assets/char_animations/44/8660.png")],
+        [@image-url("assets/char_animations/45/8670.png")],
+        [@image-url("assets/char_animations/46/8680.png")],
+        [@image-url("assets/char_animations/47/9047.png")],
+        [@image-url("assets/char_animations/48/8700.png")],
+        [@image-url("assets/char_animations/49/9073.png")],
+        [@image-url("assets/char_animations/50/9119.png")],
+        [@image-url("assets/char_animations/51/9132.png")],
+        [@image-url("assets/char_animations/52/9156.png")],
+        [@image-url("assets/char_animations/53/9167.png")],
+        [@image-url("assets/char_animations/54/9191.png")],
+        [],
+        [@image-url("assets/char_animations/56/7684.png")],
+    ];
+    
+    callback set-chips([bool]);
+    set-chips(chips) => {
+        chips-scr.chips = chips;
+    }
+    callback set-selected-chips <=> chips-scr.set-selected-chips;
+    callback chip-edited <=> chips-scr.chip-edited;
+    callback chip-selected-edited <=> chips-scr.chip-selected-edited;
+
+    callback set-bytes([bool]);
+    set-bytes(bytes) => {
+        bytes-scr.bytes = bytes;
+    }
+    callback set-selected-bytes <=> bytes-scr.set-selected-bytes;
+    callback byte-edited <=> bytes-scr.byte-edited;
+    callback byte-selected-edited <=> bytes-scr.byte-selected-edited;
+
+    callback set-trophies <=> trophy-scr.set-trophies;
+    callback trophy-edited <=> trophy-scr.ending-edited;
+    callback trophy-pearl-edited(bool);
+    callback trophy-fan-edited(bool);
+
+    property <int> slot: 1;
+    property <Game> game;
+    callback slot-changed(Game, int);
+    slot-changed(game, slot) => {
+        if slot == 0 {
+            root.selected-scr = Screen.none;
+        }
+    }
+
+    HorizontalBox {
+        sidebar := VerticalBox {
+            width: 220px;
+            spacing: 5px;
+            alignment: start;
+
+            Text {
+                text: "Slots";
+                font-size: 28px;
+                horizontal-alignment: center;
+            }
+
+            Button {
+                text: "FNaF World Save 1";
+                primary: root.slot == 1 && root.game == Game.WorldVanilla;
+                
+                clicked => {
+                    root.slot = 1;
+                    root.game = Game.WorldVanilla;
+                    root.slot-changed(Game.WorldVanilla, 1);
+                }
+            }
+            Button {
+                text: "FNaF World Save 2";
+                primary: root.slot == 2 && root.game == Game.WorldVanilla;
+                
+                clicked => {
+                    root.slot = 2;
+                    root.game = Game.WorldVanilla;
+                    root.slot-changed(Game.WorldVanilla, 2);
+                }
+            }
+            Button {
+                text: "FNaF World Save 3";
+                primary: root.slot == 3 && root.game == Game.WorldVanilla;
+                
+                clicked => {
+                    root.slot = 3;
+                    root.game = Game.WorldVanilla;
+                    root.slot-changed(Game.WorldVanilla, 3);
+                }
+            }
+            Button {
+                text: "FNaF World Trophies";
+                primary: root.slot == 0 && root.game == Game.WorldVanilla;
+                
+                clicked => {
+                    root.slot = 0;
+                    root.game = Game.WorldVanilla;
+                    root.slot-changed(Game.WorldVanilla, 0);
+                }
+            }
+            Button {
+                text: "FW: Refreshed Save 1";
+                primary: root.slot == 1 && root.game == Game.WorldRefreshed;
+                
+                clicked => {
+                    root.slot = 1;
+                    root.game = Game.WorldRefreshed;
+                    root.slot-changed(Game.WorldRefreshed, 1);
+                }
+            }
+            Button {
+                text: "FW: Refreshed Save 2";
+                primary: root.slot == 2 && root.game == Game.WorldRefreshed;
+                
+                clicked => {
+                    root.slot = 2;
+                    root.game = Game.WorldRefreshed;
+                    root.slot-changed(Game.WorldRefreshed, 2);
+                }
+            }
+            Button {
+                text: "FW: Refreshed Save 3";
+                primary: root.slot == 3 && root.game == Game.WorldRefreshed;
+                
+                clicked => {
+                    root.slot = 3;
+                    root.game = Game.WorldRefreshed;
+                    root.slot-changed(Game.WorldRefreshed, 3);
+                }
+            }
+            Button {
+                text: "FW: Refreshed Save 4";
+                primary: root.slot == 4 && root.game == Game.WorldRefreshed;
+                
+                clicked => {
+                    root.slot = 4;
+                    root.game = Game.WorldRefreshed;
+                    root.slot-changed(Game.WorldRefreshed, 4);
+                }
+            }
+            Button {
+                text: "FW: Refreshed Trophies";
+                primary: root.slot == 0 && root.game == Game.WorldRefreshed;
+                
+                clicked => {
+                    root.slot = 0;
+                    root.game = Game.WorldRefreshed;
+                    root.slot-changed(Game.WorldRefreshed, 0);
+                }
+            }
+        }
+        Rectangle {
+            fnaf-world-edit := VerticalBox {
+                visible: root.slot > 0;
+                alignment: start;
+                width: 100%;
+                height: 100%;
+                
+                TouchArea {}
+
+                HorizontalLayout {
+                    height: 40px;
+                    tab0 := TabButton {
+                        text: "Party";
+                        tab-scr: Screen.party;
+                        text-size: 16px;
+                        cur-scr: root.selected-scr;
+                        choose-tab(scr) => {
+                            root.selected-scr = scr;
+                        }
+                    }
+                    tab1 := TabButton {
+                        text: "Chips";
+                        tab-scr: Screen.chips;
+                        text-size: 16px;
+                        cur-scr: root.selected-scr;
+                        choose-tab(scr) => {
+                            root.selected-scr = scr;
+                        }
+                    }
+                    tab2 := TabButton {
+                        text: "Bytes";
+                        tab-scr: Screen.bytes;
+                        text-size: 16px;
+                        cur-scr: root.selected-scr;
+                        choose-tab(scr) => {
+                            root.selected-scr = scr;
+                        }
+                    }
+                    tab3 := TabButton {
+                        text: "World";
+                        tab-scr: Screen.world;
+                        text-size: 16px;
+                        cur-scr: root.selected-scr;
+                        choose-tab(scr) => {
+                            root.selected-scr = scr;
+                        }
+                    }
+                }
+
+                Rectangle {
+                    height: parent.height - 65px;
+
+                    party-scr := PartyScreen {
+                        width: 100%;
+                        height: 100%;
+                        visible: root.selected-scr == Screen.party;
+                        characters-frames: root.characters-frames;
+                    }
+
+                    world-scr := WorldScreen {
+                        width: 100%;
+                        height: 100%;
+                        visible: root.selected-scr == Screen.world;
+                        game: root.game;
+
+                        changed gamemode => {gamemode-edited(self.gamemode)}
+                        changed other-difficulty => {other-edited(self.other-difficulty)}
+                        changed hours => {hours-edited(self.hours)}
+                        changed minutes => {minutes-edited(self.minutes)}
+                        changed seconds => {seconds-edited(self.seconds)}
+                        changed _x => {x-edited(self._x)}
+                        changed _y => {y-edited(self._y)}
+                        changed tokens => {tokens-edited(self.tokens)}
+                        changed pearls => {pearls-edited(self.pearls)}
+                        changed armor => {armor-edited(self.armor)}
+                        changed porkpatch => {porkpatch-edited(self.porkpatch)}
+                        changed key => {key-edited(self.key)}
+                        changed portal => {portal-edited(self.portal)}
+                        changed lantern => {lantern-edited(self.lantern)}
+                    }
+
+                    chips-scr := ChipsScreen {
+                        width: 100%;
+                        height: 100%;
+                        visible: root.selected-scr == Screen.chips;
+                        game: root.game;
+                    }
+
+                    bytes-scr := BytesScreen {
+                        width: 100%;
+                        height: 100%;
+                        visible: root.selected-scr == Screen.bytes;
+                        game: root.game;
+                    }
+                }
+            }
+
+            trophy-scr := TrophyScreen {
+                // width: 100%;
+                // height: 100%;
+                visible: (root.game == Game.WorldRefreshed || root.game == Game.WorldVanilla) && root.slot == 0;
+                
+                changed pearl => { root.trophy-pearl-edited(self.pearl) }
+                changed fan => { root.trophy-fan-edited(self.fan) }
+            }
+        }
+    }
+
+    snackbar := SnackBar {
+        width: root.width;
+        x: 0;
+        y: root.height - self.height;
+    }
+}

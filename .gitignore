@@ -1,0 +1,4 @@
+/target
+*.py
+/ui/assets/unused
+/src/save_file_watcher.rs

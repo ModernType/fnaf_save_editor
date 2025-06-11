@@ -1,0 +1,35 @@
+export component ImageAnim {
+    in property <[image]> frames;
+    in property <duration> frame-interval: 40ms;
+    property <int> index: 0;
+    property <image> cur_frame: frames[index];
+    in property <image> source;
+    in property <brush> colorize;
+
+    preferred-height: img.preferred-height;
+    preferred-width: img.preferred-width;
+
+    t := Timer {
+        interval: root.frame-interval;
+        running: true;
+        triggered => {
+            root.index += 1;
+            if root.index >= frames.length {
+                root.index = 0;
+            }
+        }
+    }
+
+    img := Image {
+        colorize: root.colorize;
+        source: t.running ? root.cur_frame : root.source;
+    }
+
+    @children
+}
+
+export enum Game {
+    WorldVanilla,
+    WorldRefreshed,
+    // TODO: More to come
+}

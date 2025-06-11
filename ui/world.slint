@@ -1,0 +1,549 @@
+import { ScrollView, SpinBox, ComboBox, LineEdit } from "std-widgets.slint";
+import { ImageAnim, Game } from "base.slint";
+
+export enum Gamemode {
+    Adventure,
+    FixedParty,
+}
+
+export enum Difficulty {
+    Normal,
+    Hard,
+    HardRefreshed,
+}
+
+export component WorldScreen {
+    in-out property <Gamemode> gamemode;
+    in-out property <int> other-difficulty;
+    in-out property <int> hours;
+    in-out property <int> minutes;
+    in-out property <int> seconds;
+    in-out property <int> _x;
+    in-out property <int> _y;
+    in-out property <int> tokens;
+    in-out property <int> pearls;
+    in-out property <int> armor;
+    in-out property <[bool]> jumps: [true, false, false, false, false, false, false];
+    in-out property <bool> porkpatch;
+    in-out property <[bool]> guardians: [false, false, false, false, false];
+    in-out property <[bool]> clocks: [false, false, false, false, false];
+    in-out property <bool> key;
+    in-out property <bool> portal;
+    in-out property <bool> lantern;
+
+    in property <Game> game;
+
+    callback jumps-edited(int, bool);
+    callback guardians-edited(int, bool);
+    callback clocks-edited(int, bool);
+
+    public pure function difficulty-to-number(diff: Difficulty) -> int {
+        if diff == Difficulty.Normal { 1 }
+        else if diff == Difficulty.Hard { 2 }
+        else { 3 }
+    }
+
+    TouchArea {}
+
+    VerticalLayout {
+        spacing: 25px;
+        padding: 5px;
+
+        Text {
+            text: "World Properties";
+            horizontal-alignment: center;
+            font-size: 28px;
+        }
+
+        ScrollView {
+            VerticalLayout {
+                spacing: 20px;
+                
+
+                HorizontalLayout {
+                    spacing: 10px;
+                    Text {
+                        text: "Gamemode";
+                        font-size: 18px;
+                        vertical-alignment: center;
+                    }
+                    ComboBox {
+                        model: ["Adventure", "Fixed Party"];
+                        selected(current-value) => {
+                            if self.current-index == 0 {
+                                root.gamemode = Gamemode.Adventure
+                            }
+                            else if self.current-index == 1 {
+                                root.gamemode = Gamemode.FixedParty
+                            }
+                        }
+                    }
+                }
+
+                HorizontalLayout {
+                    spacing: 10px;
+                    Text {
+                        text: "Difficulty";
+                        font-size: 18px;
+                        vertical-alignment: center;
+                    }
+                    diff-choose := ComboBox {
+                        model: root.game == Game.WorldVanilla ? ["Normal", "Hard"] : ["Easy", "Normal", "Hard"];
+                        horizontal-stretch: 5.0;
+                        current-index: root.other-difficulty - 1;
+                        selected(current-value) => {
+                            root.other-difficulty = self.current-index + 1;
+                            diff-spin.value = root.other-difficulty;
+                        }
+                    }
+                    diff-spin := SpinBox {
+                        minimum: 1;
+                        maximum: 999999;
+                        value: other-difficulty;
+                        edited(value) => {
+                            root.other-difficulty = value;
+                            if value == 1 { diff-choose.current-index = 0 }
+                            if value == 2 { diff-choose.current-index = 1 }
+                            if value == 3 && root.game == Game.WorldRefreshed { diff-choose.current-index = 2 }
+                        }
+                    }
+                }
+
+                HorizontalLayout {
+                    spacing: 10px;
+
+                    Text {
+                        text: "Time played";
+                        font-size: 18px;
+                        vertical-alignment: center;
+                    }
+                    SpinBox {
+                        minimum: 0;
+                        maximum: 999999;
+                        value: root.hours;
+                        edited(value) => {
+                            root.hours = value;
+                        }
+                    }
+                    SpinBox {
+                        minimum: 0;
+                        maximum: 59;
+                        value: root.minutes;
+                        edited(value) => {
+                            root.minutes = value;
+                        }
+                    }
+                    SpinBox {
+                        minimum: 0;
+                        maximum: 59;
+                        value: root.seconds;
+                        edited(value) => {
+                            root.seconds = value;
+                        }
+                    }
+                }
+
+                HorizontalLayout {
+                    spacing: 10px;
+
+                    Text {
+                        text: "Save Position";
+                        font-size: 18px;
+                        vertical-alignment: center;
+                    }
+                    LineEdit {
+                        input-type: number;
+                        text: _x;
+                        font-size: 18px;
+                        edited(text) => {
+                            root._x = text.to-float();
+                        }
+                    }
+                    LineEdit {
+                        input-type: number;
+                        text: _y;
+                        font-size: 18px;
+                        edited(text) => {
+                            root._y = text.to-float();
+                        }
+                    }
+                }
+
+                HorizontalLayout {
+                    spacing: 10px;
+
+                    Text {
+                        text: "Tokens";
+                        font-size: 18px;
+                        vertical-alignment: center;
+                    }
+                    LineEdit {
+                        input-type: number;
+                        font-size: 18px;
+                        text: tokens;
+                        edited(text) => {
+                            root.tokens = text.to-float();
+                        }
+                    }
+                }
+
+                HorizontalLayout {
+                    spacing: 10px;
+
+                    Text {
+                        text: "Pearls Catched";
+                        font-size: 18px;
+                        vertical-alignment: center;
+                    }
+                    pearl-spin := SpinBox {
+                        minimum: 0;
+                        maximum: 999999;
+                        value: root.pearls;
+                        edited(value) => {
+                            root.pearls = value;
+                        }
+                    }
+                    Image {
+                        opacity: root.pearls >= 5 ? 1.0 : 0.3;
+                        source: @image-url("assets/pearl.png");
+                        TouchArea {
+                            clicked => {
+                                if root.pearls < 5 {
+                                    root.pearls = 5;
+                                    pearl-spin.value = 5;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                HorizontalLayout {
+                    spacing: 10px;
+                    min-height: ar.preferred-height;
+
+                    Text {
+                        text: "Armor";
+                        font-size: 18px;
+                        vertical-alignment: center;
+                    }
+                    Image {
+                        opacity: root.armor >= 1 ? 1.0 : 0.3;
+                        source: @image-url("assets/armor1.png");
+                        image-fit: ImageFit.preserve;
+                        TouchArea {
+                            clicked => {
+                                if root.armor == 1 {
+                                    root.armor = 0;
+                                }
+                                else {
+                                    root.armor = 1;
+                                }
+                            }
+                        }
+                    }
+                    Image {
+                        opacity: root.armor >= 2 ? 1.0 : 0.3;
+                        source: @image-url("assets/armor2.png");
+                        image-fit: ImageFit.preserve;
+                        TouchArea {
+                            clicked => {
+                                if root.armor == 2 {
+                                    root.armor = 0;
+                                }
+                                else {
+                                    root.armor = 2;
+                                }
+                            }
+                        }
+                    }
+                    ar := Image {
+                        opacity: root.armor >= 3 ? 1.0 : 0.3;
+                        source: @image-url("assets/armor3.png");
+                        image-fit: ImageFit.preserve;
+                        TouchArea {
+                            clicked => {
+                                if root.armor == 3 {
+                                    root.armor = 0;
+                                }
+                                else {
+                                    root.armor = 3;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                HorizontalLayout {
+                    spacing: 10px;
+                    min-height: jump.preferred-height;
+
+                    Text {
+                        text: "Jumps";
+                        font-size: 18px;
+                        vertical-alignment: center;
+                    }
+                    jump := Image {
+                        source: @image-url("assets/jumps/0.png");
+                        image-fit: ImageFit.preserve;
+                    }
+                    Image {
+                        opacity: root.jumps[1] ? 1.0 : 0.3;
+                        source: @image-url("assets/jumps/1.png");
+                        image-fit: ImageFit.preserve;
+                        TouchArea {
+                            clicked => {
+                                root.jumps[1] = !root.jumps[1];
+                                root.jumps-edited(1, root.jumps[1])
+                            }
+                        }
+                    }
+                    Image {
+                        opacity: root.jumps[2] ? 1.0 : 0.3;
+                        source: @image-url("assets/jumps/2.png");
+                        image-fit: ImageFit.preserve;
+                        TouchArea {
+                            clicked => {
+                                root.jumps[2] = !root.jumps[2];
+                                root.jumps-edited(2, root.jumps[2])
+                            }
+                        }
+                    }
+                    Image {
+                        opacity: root.jumps[3] ? 1.0 : 0.3;
+                        source: @image-url("assets/jumps/3.png");
+                        image-fit: ImageFit.preserve;
+                        TouchArea {
+                            clicked => {
+                                root.jumps[3] = !root.jumps[3];
+                                root.jumps-edited(3, root.jumps[3])
+                            }
+                        }
+                    }
+                    Image {
+                        opacity: root.jumps[4] ? 1.0 : 0.3;
+                        source: @image-url("assets/jumps/4.png");
+                        image-fit: ImageFit.preserve;
+                        TouchArea {
+                            clicked => {
+                                root.jumps[4] = !root.jumps[4];
+                                root.jumps-edited(4, root.jumps[4])
+                            }
+                        }
+                    }
+                    Image {
+                        opacity: root.jumps[5] ? 1.0 : 0.3;
+                        source: @image-url("assets/jumps/5.png");
+                        image-fit: ImageFit.preserve;
+                        TouchArea {
+                            clicked => {
+                                root.jumps[5] = !root.jumps[5];
+                                root.jumps-edited(5, root.jumps[5])
+                            }
+                        }
+                    }
+                    if root.game == Game.WorldRefreshed: Image {
+                        opacity: root.jumps[6] ? 1.0 : 0.3;
+                        source: @image-url("assets/jumps/6.png");
+                        image-fit: ImageFit.preserve;
+                        TouchArea {
+                            clicked => {
+                                root.jumps[6] = !root.jumps[6];
+                                root.jumps-edited(6, root.jumps[6])
+                            }
+                        }
+                    }
+                }
+
+                HorizontalLayout {
+                    spacing: 10px;
+                    min-height: pork.preferred-height;
+                    alignment: LayoutAlignment.space-between;
+
+                    Text {
+                        text: "Guardians";
+                        font-size: 18px;
+                        vertical-alignment: center;
+                    }
+                    pork := Image {
+                        opacity: root.porkpatch ? 1.0 : 0.3;
+                        source: @image-url("assets/bosses/porkpatch.png");
+                        image-fit: ImageFit.fill;
+                        TouchArea {
+                            clicked => {
+                                root.porkpatch = !root.porkpatch;
+                                // root.guardians[0] = !root.guardians[0];
+                                // root.guardians-edited(0, root.jumps[0])
+                            }
+                        }
+                    }
+                    Rectangle {
+                        preferred-width: pork.preferred-width;
+                        Image {
+                            opacity: root.guardians[0] ? 1.0 : 0.3;
+                            source: root.game == Game.WorldVanilla ? @image-url("assets/bosses/button.png") : @image-url("assets/bosses/autochipper_fwr.png");
+                            width: parent.width;
+                            height: parent.height;
+                            image-fit: ImageFit.fill;
+                            TouchArea {
+                                clicked => {
+                                    // root.porkpatch = !root.porkpatch;
+                                    root.guardians[0] = !root.guardians[0];
+                                    root.guardians-edited(0, root.guardians[0])
+                                }
+                            }
+                        }
+                    }
+                    Image {
+                        opacity: root.guardians[1] ? 1.0 : 0.3;
+                        source: root.game == Game.WorldVanilla ? @image-url("assets/bosses/snowcone.png") : @image-url("assets/bosses/snowcone_fwr.png");
+                        image-fit: ImageFit.fill;
+                        TouchArea {
+                            clicked => {
+                                root.guardians[1] = !root.guardians[1];
+                                root.guardians-edited(1, root.guardians[1])
+                            }
+                        }
+                    }
+                    Image {
+                        opacity: root.guardians[2] ? 1.0 : 0.3;
+                        source: root.game == Game.WorldVanilla ? @image-url("assets/bosses/supergoon.png") : @image-url("assets/bosses/supergoon_fwr.png");
+                        image-fit: ImageFit.fill;
+                        TouchArea {
+                            clicked => {
+                                root.guardians[2] = !root.guardians[2];
+                                root.guardians-edited(2, root.guardians[2])
+                            }
+                        }
+                    }
+                    Image {
+                        opacity: root.guardians[3] ? 1.0 : 0.3;
+                        source: root.game == Game.WorldVanilla ? @image-url("assets/bosses/overclocked.png") : @image-url("assets/bosses/overclocked_fwr.png");
+                        image-fit: ImageFit.fill;
+                        TouchArea {
+                            clicked => {
+                                root.guardians[3] = !root.guardians[3];
+                                root.guardians-edited(3, root.guardians[3])
+                            }
+                        }
+                    }
+                    if root.game == Game.WorldRefreshed: Image {
+                        opacity: root.guardians[4] ? 1.0 : 0.3;
+                        source: @image-url("assets/bosses/eyesore_fwr.png");
+                        image-fit: ImageFit.fill;
+                        TouchArea {
+                            clicked => {
+                                root.guardians[4] = !root.guardians[4];
+                                root.guardians-edited(4, root.guardians[4])
+                            }
+                        }
+                    }
+                }
+
+                HorizontalLayout {
+                    spacing: 10px;
+                    min-height: clock.preferred-height;
+
+                    Text {
+                        text: "Clocks";
+                        font-size: 18px;
+                        vertical-alignment: center;
+                    }
+
+                    clock := Image {
+                        opacity: root.clocks[0] ? 1.0 : 0.3;
+                        source: @image-url("assets/clock.png");
+                        TouchArea {
+                            clicked => {
+                                root.clocks[0] = !root.clocks[0];
+                                root.clocks-edited(0, root.clocks[0])
+                            }
+                        }
+                    }
+                    Image {
+                        opacity: root.clocks[1] ? 1.0 : 0.3;
+                        source: @image-url("assets/clock.png");
+                        TouchArea {
+                            clicked => {
+                                root.clocks[1] = !root.clocks[1];
+                                root.clocks-edited(1, root.clocks[1])
+                            }
+                        }
+                    }
+                    Image {
+                        opacity: root.clocks[2] ? 1.0 : 0.3;
+                        source: @image-url("assets/clock.png");
+                        TouchArea {
+                            clicked => {
+                                root.clocks[2] = !root.clocks[2];
+                                root.clocks-edited(2, root.clocks[2])
+                            }
+                        }
+                    }
+                    Image {
+                        opacity: root.clocks[3] ? 1.0 : 0.3;
+                        source: @image-url("assets/clock.png");
+                        TouchArea {
+                            clicked => {
+                                root.clocks[3] = !root.clocks[3];
+                                root.clocks-edited(3, root.clocks[3])
+                            }
+                        }
+                    }
+                    Image {
+                        opacity: root.clocks[4] ? 1.0 : 0.3;
+                        source: @image-url("assets/clock.png");
+                        TouchArea {
+                            clicked => {
+                                root.clocks[4] = !root.clocks[4];
+                                root.clocks-edited(4, root.clocks[4])
+                            }
+                        }
+                    }
+                }
+
+                HorizontalLayout {
+                    spacing: 10px;
+                    // min-height: pork.preferred-height;
+                    min-height: 70px;
+
+                    Text {
+                        text: "Miscellaneous";
+                        font-size: 18px;
+                        vertical-alignment: center;
+                    }
+
+                    if root.game == Game.WorldRefreshed: Image {
+                        opacity: root.lantern ? 1.0 : 0.3;
+                        source: @image-url("assets/lantern.png");
+                        TouchArea {
+                            clicked => {
+                                root.lantern = !root.lantern;
+                            }
+                        }
+                    }
+
+                    Image {
+                        opacity: root.key ? 1.0 : 0.3;
+                        source: @image-url("assets/key.png");
+                        TouchArea {
+                            clicked => {
+                                root.key = !root.key;
+                            }
+                        }
+                    }
+
+                    k := ImageAnim {
+                        opacity: root.portal ? 1.0 : 0.3;
+                        frame-interval: 96ms;
+                        frames: [@image-url("E:/rust/fnaf_save_editor/ui/assets/portal/4857.png"),@image-url("E:/rust/fnaf_save_editor/ui/assets/portal/4858.png"),@image-url("E:/rust/fnaf_save_editor/ui/assets/portal/4859.png"),@image-url("E:/rust/fnaf_save_editor/ui/assets/portal/4860.png"),@image-url("E:/rust/fnaf_save_editor/ui/assets/portal/4861.png"), @image-url("E:/rust/fnaf_save_editor/ui/assets/portal/4862.png"), @image-url("E:/rust/fnaf_save_editor/ui/assets/portal/4863.png"), @image-url("E:/rust/fnaf_save_editor/ui/assets/portal/4864.png"), @image-url("E:/rust/fnaf_save_editor/ui/assets/portal/4865.png"), @image-url("E:/rust/fnaf_save_editor/ui/assets/portal/4866.png"), @image-url("E:/rust/fnaf_save_editor/ui/assets/portal/4868.png")];
+                        TouchArea {
+                            clicked => {
+                                root.portal = !root.portal;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }    
+}

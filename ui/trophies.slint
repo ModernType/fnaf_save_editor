@@ -1,0 +1,147 @@
+import { ImageAnim } from "base.slint";
+import { VerticalBox } from "std-widgets.slint";
+
+
+export component TrophyScreen {
+    in-out property <[bool]> endings: [false, false, false, false, false, false, false];
+    in-out property <bool> pearl;
+    in-out property <bool> fan;
+
+    callback set-trophies([bool], bool, bool);
+    callback ending-edited(int, bool);
+
+    set-trophies(endings, pearl, fan) => {
+        root.endings = endings;
+        root.pearl = pearl;
+        root.fan = fan;
+    }
+
+    TouchArea {}
+
+    VerticalBox {
+        alignment: space-around;
+        spacing: 5px;
+
+        Text {
+            text: "Trophies";
+            font-size: 28px;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+
+        VerticalLayout {
+            spacing: 20px;
+            alignment: start;
+
+            HorizontalLayout {
+                spacing: 20px;
+                alignment: space-around;
+
+                Image {
+                    colorize: endings[0] ? rgba(0, 0, 0, 0) : Colors.black;
+                    source: @image-url("assets/ending/1.png");
+                    image-fit: preserve;
+                    TouchArea {
+                        clicked => {
+                            root.endings[0] = !root.endings[0];
+                            ending-edited(0, root.endings[0])
+                        }
+                    }
+                }
+                Image {
+                    colorize: endings[1] ? rgba(0, 0, 0, 0) : Colors.black;
+                    source: @image-url("assets/ending/2.png");
+                    image-fit: preserve;
+                    TouchArea {
+                        clicked => {
+                            root.endings[1] = !root.endings[1];
+                            ending-edited(1, root.endings[1])
+                        }
+                    }
+                }
+                Image {
+                    colorize: endings[2] ? rgba(0, 0, 0, 0) : Colors.black;
+                    source: @image-url("assets/ending/3.png");
+                    image-fit: preserve;
+                    TouchArea {
+                        clicked => {
+                            root.endings[2] = !root.endings[2];
+                            ending-edited(2, root.endings[2])
+                        }
+                    }
+                }
+                Image {
+                    colorize: endings[3] ? rgba(0, 0, 0, 0) : Colors.black;
+                    source: @image-url("assets/ending/4.png");
+                    image-fit: preserve;
+                    TouchArea {
+                        clicked => {
+                            root.endings[3] = !root.endings[3];
+                            ending-edited(3, root.endings[3])
+                        }
+                    }
+                }
+                Image {
+                    colorize: endings[4] ? rgba(0, 0, 0, 0) : Colors.black;
+                    source: @image-url("assets/ending/5.png");
+                    image-fit: preserve;
+                    TouchArea {
+                        clicked => {
+                            root.endings[4] = !root.endings[4];
+                            ending-edited(4, root.endings[4])
+                        }
+                    }
+                }
+                Image {
+                    colorize: endings[5] ? rgba(0, 0, 0, 0) : Colors.black;
+                    source: @image-url("assets/ending/6.png");
+                    image-fit: preserve;
+                    TouchArea {
+                        clicked => {
+                            root.endings[5] = !root.endings[5];
+                            ending-edited(5, root.endings[5])
+                        }
+                    }
+                }
+                Image {
+                    colorize: endings[6] ? rgba(0, 0, 0, 0) : Colors.black;
+                    source: @image-url("assets/ending/7.png");
+                    image-fit: preserve;
+                    TouchArea {
+                        clicked => {
+                            root.endings[6] = !root.endings[6];
+                            ending-edited(6, root.endings[6])
+                        }
+                    }
+                }
+                
+            }
+
+            HorizontalLayout {
+                spacing: 20px;
+                alignment: center;
+
+                Image {
+                    colorize: pearl ? rgba(0, 0, 0, 0) : Colors.black;
+                    source: @image-url("assets/ending/pearl.png");
+                    image-fit: preserve;
+                    TouchArea {
+                        clicked => {
+                            root.pearl = !root.pearl;
+                        }
+                    }
+                }
+                ImageAnim {
+                    colorize: fan ? rgba(0, 0, 0, 0) : Colors.black;
+                    frame-interval: 20ms;
+                    frames: [@image-url("assets/ending/fan0.png"), @image-url("assets/ending/fan1.png"), @image-url("assets/ending/fan2.png"), @image-url("assets/ending/fan3.png"), @image-url("assets/ending/fan4.png")];
+                    TouchArea {
+                        clicked => {
+                            root.fan = !root.fan;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
