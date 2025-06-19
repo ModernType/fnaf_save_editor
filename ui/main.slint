@@ -1,10 +1,11 @@
-import { VerticalBox, Palette, HorizontalBox, Button } from "std-widgets.slint";
+import { VerticalBox, Palette, HorizontalBox, Button, ScrollView } from "std-widgets.slint";
 import { PartyScreen, Character } from "characters.slint";
 import { WorldScreen, Gamemode } from "world.slint";
 import { ChipsScreen } from "chips.slint";
 import { BytesScreen } from "bytes.slint";
 import { Game } from "base.slint";
 import { TrophyScreen } from "trophies.slint";
+import { FNAF1Screen } from "fnaf1.slint";
 
 export { Game }
 
@@ -86,6 +87,7 @@ export component MainWindow inherits Window {
     title: "Modern FNaF Save Editor";
     // default-font-size: 18px;
 
+    // Setup for error reporting `SnackBar`
     callback report(string);
     report(text) => {
         snackbar.text = text;
@@ -98,6 +100,7 @@ export component MainWindow inherits Window {
         snackbar.opened = false;
     }
 
+    // Affects only FNaF World subscreens
     property <Screen> selected-scr: Screen.none;
 
     callback lvl-edited <=> party-scr.lvl-edited;
@@ -269,8 +272,10 @@ export component MainWindow inherits Window {
     callback trophy-pearl-edited(bool);
     callback trophy-fan-edited(bool);
 
-    property <int> slot: 1;
-    property <Game> game;
+    // FNaF World slot to edit. 0 means trophies screen or another game
+    property <int> slot: 0;
+    // Which game save editor to show
+    property <Game> game: Game.FNAF1;
     callback slot-changed(Game, int);
     slot-changed(game, slot) => {
         if slot == 0 {
@@ -278,106 +283,130 @@ export component MainWindow inherits Window {
         }
     }
 
-    HorizontalBox {
+    // FNaF1 callbacks
+    callback fnaf1-night-edited <=> fnaf1-edit.fnaf1-night-edited;
+    callback fnaf1-star-edited <=> fnaf1-edit.fnaf1-star-edited;
+
+    HorizontalLayout {
+        alignment: stretch;
+
         sidebar := VerticalBox {
             width: 220px;
+            height: 100%;
             spacing: 5px;
-            alignment: start;
+            alignment: stretch;
 
             Text {
-                text: "Slots";
+                text: "Saves";
                 font-size: 28px;
                 horizontal-alignment: center;
             }
 
-            Button {
-                text: "FNaF World Save 1";
-                primary: root.slot == 1 && root.game == Game.WorldVanilla;
-                
-                clicked => {
-                    root.slot = 1;
-                    root.game = Game.WorldVanilla;
-                    root.slot-changed(Game.WorldVanilla, 1);
-                }
-            }
-            Button {
-                text: "FNaF World Save 2";
-                primary: root.slot == 2 && root.game == Game.WorldVanilla;
-                
-                clicked => {
-                    root.slot = 2;
-                    root.game = Game.WorldVanilla;
-                    root.slot-changed(Game.WorldVanilla, 2);
-                }
-            }
-            Button {
-                text: "FNaF World Save 3";
-                primary: root.slot == 3 && root.game == Game.WorldVanilla;
-                
-                clicked => {
-                    root.slot = 3;
-                    root.game = Game.WorldVanilla;
-                    root.slot-changed(Game.WorldVanilla, 3);
-                }
-            }
-            Button {
-                text: "FNaF World Trophies";
-                primary: root.slot == 0 && root.game == Game.WorldVanilla;
-                
-                clicked => {
-                    root.slot = 0;
-                    root.game = Game.WorldVanilla;
-                    root.slot-changed(Game.WorldVanilla, 0);
-                }
-            }
-            Button {
-                text: "FW: Refreshed Save 1";
-                primary: root.slot == 1 && root.game == Game.WorldRefreshed;
-                
-                clicked => {
-                    root.slot = 1;
-                    root.game = Game.WorldRefreshed;
-                    root.slot-changed(Game.WorldRefreshed, 1);
-                }
-            }
-            Button {
-                text: "FW: Refreshed Save 2";
-                primary: root.slot == 2 && root.game == Game.WorldRefreshed;
-                
-                clicked => {
-                    root.slot = 2;
-                    root.game = Game.WorldRefreshed;
-                    root.slot-changed(Game.WorldRefreshed, 2);
-                }
-            }
-            Button {
-                text: "FW: Refreshed Save 3";
-                primary: root.slot == 3 && root.game == Game.WorldRefreshed;
-                
-                clicked => {
-                    root.slot = 3;
-                    root.game = Game.WorldRefreshed;
-                    root.slot-changed(Game.WorldRefreshed, 3);
-                }
-            }
-            Button {
-                text: "FW: Refreshed Save 4";
-                primary: root.slot == 4 && root.game == Game.WorldRefreshed;
-                
-                clicked => {
-                    root.slot = 4;
-                    root.game = Game.WorldRefreshed;
-                    root.slot-changed(Game.WorldRefreshed, 4);
-                }
-            }
-            Button {
-                text: "FW: Refreshed Trophies";
-                primary: root.slot == 0 && root.game == Game.WorldRefreshed;
-                
-                clicked => {
-                    root.slot = 0;
-                    root.game = Game.WorldRefreshed;
-                    root.slot-changed(Game.WorldRefreshed, 0);
+            ScrollView {
+                VerticalLayout {
+                    spacing: 3px;
+                    // alignment: start;
+
+                    Button {
+                        text: "FNaF World Save 1";
+                        primary: root.slot == 1 && root.game == Game.WorldVanilla;
+                        
+                        clicked => {
+                            root.slot = 1;
+                            root.game = Game.WorldVanilla;
+                            root.slot-changed(Game.WorldVanilla, 1);
+                        }
+                    }
+                    Button {
+                        text: "FNaF World Save 2";
+                        primary: root.slot == 2 && root.game == Game.WorldVanilla;
+                        
+                        clicked => {
+                            root.slot = 2;
+                            root.game = Game.WorldVanilla;
+                            root.slot-changed(Game.WorldVanilla, 2);
+                        }
+                    }
+                    Button {
+                        text: "FNaF World Save 3";
+                        primary: root.slot == 3 && root.game == Game.WorldVanilla;
+                        
+                        clicked => {
+                            root.slot = 3;
+                            root.game = Game.WorldVanilla;
+                            root.slot-changed(Game.WorldVanilla, 3);
+                        }
+                    }
+                    Button {
+                        text: "FNaF World Trophies";
+                        primary: root.slot == 0 && root.game == Game.WorldVanilla;
+                        
+                        clicked => {
+                            root.slot = 0;
+                            root.game = Game.WorldVanilla;
+                            root.slot-changed(Game.WorldVanilla, 0);
+                        }
+                    }
+                    Button {
+                        text: "FW: Refreshed Save 1";
+                        primary: root.slot == 1 && root.game == Game.WorldRefreshed;
+                        
+                        clicked => {
+                            root.slot = 1;
+                            root.game = Game.WorldRefreshed;
+                            root.slot-changed(Game.WorldRefreshed, 1);
+                        }
+                    }
+                    Button {
+                        text: "FW: Refreshed Save 2";
+                        primary: root.slot == 2 && root.game == Game.WorldRefreshed;
+                        
+                        clicked => {
+                            root.slot = 2;
+                            root.game = Game.WorldRefreshed;
+                            root.slot-changed(Game.WorldRefreshed, 2);
+                        }
+                    }
+                    Button {
+                        text: "FW: Refreshed Save 3";
+                        primary: root.slot == 3 && root.game == Game.WorldRefreshed;
+                        
+                        clicked => {
+                            root.slot = 3;
+                            root.game = Game.WorldRefreshed;
+                            root.slot-changed(Game.WorldRefreshed, 3);
+                        }
+                    }
+                    Button {
+                        text: "FW: Refreshed Save 4";
+                        primary: root.slot == 4 && root.game == Game.WorldRefreshed;
+                        
+                        clicked => {
+                            root.slot = 4;
+                            root.game = Game.WorldRefreshed;
+                            root.slot-changed(Game.WorldRefreshed, 4);
+                        }
+                    }
+                    Button {
+                        text: "FW: Refreshed Trophies";
+                        primary: root.slot == 0 && root.game == Game.WorldRefreshed;
+                        
+                        clicked => {
+                            root.slot = 0;
+                            root.game = Game.WorldRefreshed;
+                            root.slot-changed(Game.WorldRefreshed, 0);
+                        }
+                    }
+                    Button {
+                        text: "Five Nights at Freddy's";
+                        primary: root.game == Game.FNAF1;
+
+                        clicked => {
+                            root.slot = 0;
+                            root.game = Game.FNAF1;
+                            root.slot-changed(Game.FNAF1, 0);
+                        }
+                    }
                 }
             }
         }
@@ -485,6 +514,13 @@ export component MainWindow inherits Window {
                 
                 changed pearl => { root.trophy-pearl-edited(self.pearl) }
                 changed fan => { root.trophy-fan-edited(self.fan) }
+            }
+
+            fnaf1-edit := FNAF1Screen {
+                visible: root.game == Game.FNAF1;
+                width: 100%;
+                height: 100%;
+
             }
         }
     }

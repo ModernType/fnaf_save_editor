@@ -1,0 +1,105 @@
+
+import { VerticalBox, SpinBox } from "std-widgets.slint";
+export component FNAF1Screen {
+    in-out property <[bool]> stars: [false, false, false];
+    in-out property <int> night: 1;
+
+    callback fnaf1-star-edited(int, bool);
+    callback fnaf1-night-edited(int);
+    callback set-fnaf1(night: int, stars: [bool]);
+
+    set-fnaf1(night, stars) => {
+
+    }
+
+    img := Image {
+        width: root.width;
+        height: root.height;
+        source: @image-url("assets/fnaf1/background.png");
+        image-fit: ImageFit.contain;
+        horizontal-alignment: right;
+    }
+
+    HorizontalLayout {
+        VerticalBox {
+            alignment: start;
+            spacing: 35px;
+            padding: 25px;
+
+
+            Text {
+                text: "Five Nights at Freddy's";
+                font-size: 22px;
+                horizontal-alignment: center;
+            }
+
+            HorizontalLayout {
+                spacing: 15px;
+                alignment: center;
+
+                Image {
+                    opacity: root.stars[0] ? 1.0 : 0.3;
+                    source: @image-url("assets/fnaf1/star.png");
+                    image-fit: preserve;
+                    TouchArea {
+                        clicked => {
+                            root.stars[0] = !root.stars[0];
+                            fnaf1-star-edited(0, root.stars[0]);
+                        }
+                    }
+                }
+                Image {
+                    opacity: root.stars[1] ? 1.0 : 0.3;
+                    source: @image-url("assets/fnaf1/star.png");
+                    image-fit: preserve;
+                    TouchArea {
+                        clicked => {
+                            root.stars[1] = !root.stars[1];
+                            fnaf1-star-edited(1, root.stars[1]);
+                        }
+                    }
+                }
+                Image {
+                    opacity: root.stars[2] ? 1.0 : 0.3;
+                    source: @image-url("assets/fnaf1/star.png");
+                    image-fit: preserve;
+                    TouchArea {
+                        clicked => {
+                            root.stars[2] = !root.stars[2];
+                            fnaf1-star-edited(2, root.stars[2]);
+                        }
+                    }
+                }
+            }
+
+            HorizontalLayout {
+                spacing: 5px;
+
+                Text {
+                    text: "Night: ";
+                    vertical-alignment: center;
+                }
+
+                SpinBox {
+                    minimum: 1;
+                    maximum: 7;
+                    value: root.night;
+                    edited(value) => {
+                        root.fnaf1-night-edited(value);
+                        if value > 5 && !root.stars[0] {
+                            root.stars[0] = true;
+                            root.fnaf1-star-edited(0, true);
+                        }
+                        if value > 6 && !root.stars[1] {
+                            root.stars[1] = true;
+                            root.fnaf1-star-edited(1, true);
+                        }
+                    }
+                }
+            }
+        }
+        Rectangle {
+            width: img.source.width * 0.8px;
+        }
+    }
+}
