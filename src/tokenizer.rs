@@ -25,6 +25,7 @@ use crate::Game as FnafWorldGame;
 pub static SAVES_PATH: LazyLock<PathBuf> = LazyLock::new(|| {
     let mut home = home::home_dir().expect("Failed to find the home directory");
     home.extend(["AppData","Roaming","MMFApplications"]);
+    std::fs::create_dir_all(&home).expect("Unable to create save directory if it not exists");
     home
 });
 
